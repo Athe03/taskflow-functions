@@ -1,0 +1,15 @@
+# Local dependencies and cache
+node_modules/
+
+# Local-only settings
+local.settings.json
+
+# VCS and editor files
+.git/
+.gitignore
+.vscode/
+.DS_Store
+
+# Logs and temp
+*.log
+*.tmp

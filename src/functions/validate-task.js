@@ -10,6 +10,11 @@ app.http('validate-task', {
             return { status: 401, body: 'Non authentifie' };
         }
 
+        const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7).trim() : '';
+        if (!token || token.split('.').length !== 3) {
+            return { status: 401, jsonBody: { error: 'Token invalide' } };
+        }
+
         const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY, {
             global: { headers: { Authorization: authHeader } }
         });
@@ -48,8 +53,13 @@ app.http('validate-task', {
         }
 
         const {
-            data: { user }
+            data: { user },
+            error: userError
         } = await supabase.auth.getUser();
+
+        if (userError || !user) {
+            return { status: 401, jsonBody: { error: 'Utilisateur non authentifie' } };
+        }
 
         const { data: task, error } = await supabase
             .from('tasks')
